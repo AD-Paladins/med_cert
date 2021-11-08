@@ -1,8 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:med_cert/screens/main_screen.dart';
 
-class SearchScreen extends StatelessWidget {
-  SearchScreen({Key? key}) : super(key: key);
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({Key? key}) : super(key: key);
+  @override
+  _SearchScreenState createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  bool loading = false;
+  TextEditingController tituloController = new TextEditingController();
+  TextEditingController descripcionController = new TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // _setUser();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,42 +25,75 @@ class SearchScreen extends StatelessWidget {
         title: Text('Buscar Certificado COVID'),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: EdgeInsets.all(10),
-            child: TextField(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: TextFormField(
+              maxLength: 13,
+              maxLines: 1,
+              minLines: 1,
+              controller: this.tituloController,
+              keyboardType: TextInputType.text,
+              autofocus: false,
               decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'User Name',
-                  hintText: 'Enter valid mail id as abc@gmail.com'),
+                labelText: "Numero de cédula",
+                hintStyle: TextStyle(fontFamily: "AvenirNext"),
+                labelStyle: TextStyle(fontFamily: "AvenirNext"),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              validator: (value) {
+                if (value != null && value.isEmpty) {
+                  return "Debe ingresar un título.";
+                }
+                return null;
+              },
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(10),
-            child: TextField(
-              obscureText: true,
+            padding: const EdgeInsets.only(bottom: 16),
+            child: TextFormField(
+              maxLength: 10,
+              maxLines: 1,
+              minLines: 1,
+              controller: this.tituloController,
+              keyboardType: TextInputType.text,
+              autofocus: false,
               decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Password',
-                  hintText: 'Enter your secure password'),
+                labelText: "Fecha de nacimiento",
+                hintStyle: TextStyle(fontFamily: "AvenirNext"),
+                labelStyle: TextStyle(fontFamily: "AvenirNext"),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              validator: (value) {
+                if (value != null && value.isEmpty) {
+                  return "Debe ingresar un título.";
+                }
+                return null;
+              },
             ),
           ),
-          Container(
-            height: 50,
-            width: 250,
-            decoration: BoxDecoration(
-                color: Colors.blue, borderRadius: BorderRadius.circular(20)),
-            child: TextButton(
-              onPressed: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => MainScreen()));
-              },
-              child: Text(
-                'Login',
-                style: TextStyle(color: Colors.white, fontSize: 25),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              height: 50,
+              // width: 250,
+              decoration: BoxDecoration(
+                  color: Colors.blue, borderRadius: BorderRadius.circular(8)),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (_) => MainScreen()));
+                },
+                child: const Text(
+                  'Buscar',
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );

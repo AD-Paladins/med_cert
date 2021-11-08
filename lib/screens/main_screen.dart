@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'qr_screen.dart';
 
 class MainScreen extends StatelessWidget {
-  MainScreen({Key? key}) : super(key: key);
+  const MainScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
