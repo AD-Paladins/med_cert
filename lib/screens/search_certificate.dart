@@ -1,9 +1,8 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:med_cert/entities/certificate.dart';
-import 'package:med_cert/network_layer/dio_client.dart';
-import 'package:med_cert/screens/main_screen.dart';
 import 'package:med_cert/services/vaccine_service.dart';
+import 'package:med_cert/entities/error_response.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key, this.restorationId}) : super(key: key);
@@ -80,7 +79,9 @@ class _SearchScreenState extends State<SearchScreen> {
         _vaccineName = certificate.data.datavacuna.first.nomvacuna;
         _message = certificate.data.message;
       });
-    } catch (error) {
+    } on ErrorResponse catch (error) {
+      showAlertDialog(context, "Error", error.data!.message);
+    } catch (e) {
       showAlertDialog(context, "Error",
           "Certificado no encontrado, cédula o fecha de nacimiento ingresados de manera incorrecta");
     }
@@ -100,7 +101,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Buscar Certificado COVID'),
+        title: const Text('Buscar Certificado COVID'),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -112,14 +113,14 @@ class _SearchScreenState extends State<SearchScreen> {
               maxLength: 13,
               maxLines: 1,
               minLines: 1,
-              controller: this.dniInput,
+              controller: dniInput,
               keyboardType: TextInputType.text,
               autofocus: false,
               decoration: InputDecoration(
                 icon: const Icon(Icons.perm_identity),
                 labelText: "Numero de cédula",
-                hintStyle: TextStyle(fontFamily: "AvenirNext"),
-                labelStyle: TextStyle(fontFamily: "AvenirNext"),
+                hintStyle: const TextStyle(fontFamily: "AvenirNext"),
+                labelStyle: const TextStyle(fontFamily: "AvenirNext"),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               ),
@@ -136,14 +137,14 @@ class _SearchScreenState extends State<SearchScreen> {
                 const EdgeInsets.only(top: 0, right: 16, left: 16, bottom: 16),
             child: TextFormField(
               readOnly: true,
-              controller: this.dateInput,
+              controller: dateInput,
               keyboardType: TextInputType.text,
               autofocus: false,
               decoration: InputDecoration(
                 icon: const Icon(Icons.calendar_today),
                 labelText: "Fecha de nacimiento",
-                hintStyle: TextStyle(fontFamily: "AvenirNext"),
-                labelStyle: TextStyle(fontFamily: "AvenirNext"),
+                hintStyle: const TextStyle(fontFamily: "AvenirNext"),
+                labelStyle: const TextStyle(fontFamily: "AvenirNext"),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               ),
@@ -154,7 +155,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 return null;
               },
               onTap: () async {
-                print("fadasadfdfsdfsdfsdf");
                 _presentDatePicker();
               },
             ),
@@ -180,11 +180,11 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Text(_vaccineName),
           ),
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Text(_message),
           ),
         ],

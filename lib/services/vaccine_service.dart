@@ -12,7 +12,7 @@ class VaccineService {
     try {
       return Certificate.fromJson(response);
     } catch (error) {
-      return ErrorResponse.fromJson(response);
+      throw ErrorResponse.fromJson(response);
     }
   }
 }
