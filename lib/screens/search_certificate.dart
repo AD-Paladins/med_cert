@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:med_cert/entities/certificate.dart';
 import 'package:med_cert/network_layer/dio_client.dart';
 import 'package:med_cert/screens/main_screen.dart';
 import 'package:med_cert/services/vaccine_service.dart';
@@ -17,6 +18,8 @@ class _SearchScreenState extends State<SearchScreen> {
   bool loading = false;
   TextEditingController dniInput = TextEditingController();
   TextEditingController dateInput = TextEditingController();
+  String _vaccineName = "";
+  String _message = "";
 
   void _presentDatePicker() {
     // showDatePicker is a pre-made funtion of Flutter
@@ -41,9 +44,46 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  void _getVaccinationData() {
-    VaccineService.shared
-        .getVaccinationData(dni: dniInput.text, birthDate: dateInput.text);
+  void showAlertDialog(BuildContext context, String title, String message) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: const Text("Aceptar"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(title),
+      content: Text(message),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  Future<void> _getVaccinationData() async {
+    try {
+      var result = await VaccineService.shared
+          .getVaccinationData(dni: dniInput.text, birthDate: dateInput.text);
+      Certificate certificate = result as Certificate;
+      setState(() {
+        _vaccineName = certificate.data.datavacuna.first.nomvacuna;
+        _message = certificate.data.message;
+      });
+    } catch (error) {
+      showAlertDialog(context, "Error",
+          "Certificado no encontrado, cédula o fecha de nacimiento ingresados de manera incorrecta");
+    }
   }
 
   @override
@@ -138,7 +178,15 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ),
             ),
-          )
+          ),
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(_vaccineName),
+          ),
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(_message),
+          ),
         ],
       ),
     );

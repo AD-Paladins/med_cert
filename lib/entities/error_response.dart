@@ -14,14 +14,14 @@ class ErrorResponse {
     required this.data,
   });
 
-  Data data;
+  Data? data;
 
   factory ErrorResponse.fromJson(dynamic json) => ErrorResponse(
-        data: Data.fromJson(json["data"]),
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "data": data.toJson(),
+        "data": data == null ? null : data!.toJson(),
       };
 }
 
