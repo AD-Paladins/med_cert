@@ -2,7 +2,6 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:med_cert/screens/search_certificate.dart';
 import 'package:med_cert/util/shared_preferences_util.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'qr_screen.dart';
 
 class MainScreen extends StatelessWidget {

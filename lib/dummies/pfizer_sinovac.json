@@ -1,0 +1,25 @@
+{
+    "data": {
+        "status": true,
+        "message": "Paciente se encuentra vacunado",
+        "datavacuna": [
+            {
+                "nomvacuna": "CoronaVac SINOVAC",
+                "dosisaplicada": 2,
+                "fechavacuna": "yyyy-mm-dd"
+            },
+            {
+                "nomvacuna": "CoronaVac SINOVAC",
+                "dosisaplicada": 1,
+                "fechavacuna": "2021-08-18"
+            }
+        ],
+        "datapersona": [
+            {
+                "fechanacimiento": "1888-8-18",
+                "nombres": "MONCAYO PIGUABE DON RAMON",
+                "idencrypt": "xxxxx@@@xxxxxxxxx+w=="
+            }
+        ]
+    }
+}

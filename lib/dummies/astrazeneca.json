@@ -1,0 +1,28 @@
+{
+    "status": true,
+    "message": "Estimado paciente usted consta en la Plataforma de Atenciones de Salud con:",
+    "vacunadata": [
+        {
+            "nombrevacuna": "ASTRAZENECA",
+            "dosis": 2,
+            "fechavacunacion": {
+                "date": "2021-08-18 00:00:00.000000",
+                "timezone_type": 3,
+                "timezone": "America\/Guayaquil"
+            }
+        },
+        {
+            "nombrevacuna": "ASTRAZENECA",
+            "dosis": 1,
+            "fechavacunacion": {
+                "date": "2021-08-18 00:00:00.000000",
+                "timezone_type": 3,
+                "timezone": "America\/Guayaquil"
+            }
+        }
+    ],
+    "pacientedata": {
+        "idpacinete": 1234452,
+        "correo": "xxxxxxxxx@gmail.com"
+    }
+}

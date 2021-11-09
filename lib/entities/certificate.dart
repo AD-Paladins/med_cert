@@ -1,4 +1,5 @@
 // To parse this JSON data, do
+// For SINOVAC and PFIZER
 //
 //     final certificate = certificateFromJson(jsonString);
 
@@ -16,7 +17,7 @@ class Certificate {
 
   Data data;
 
-  factory Certificate.fromJson(Map<String, dynamic> json) => Certificate(
+  factory Certificate.fromJson(dynamic json) => Certificate(
         data: Data.fromJson(json["data"]),
       );
 
