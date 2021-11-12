@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:med_cert/entities/certificate.dart';
+import 'package:path_provider/path_provider.dart';
 
 class DioClient {
   static DioClient shared = DioClient();
@@ -14,11 +14,6 @@ class DioClient {
     Map retrievedUser = {};
 
     try {
-      Map request = {
-        "form[identificacion]": dni,
-        "form[fechanacimiento]": birthDate,
-        "form[cttipoidentificacion]": 6
-      };
       FormData formData = FormData.fromMap({
         "form[identificacion]": dni,
         "form[fechanacimiento]": birthDate,
@@ -33,5 +28,27 @@ class DioClient {
       print('Error creating user: $e');
     }
     return retrievedUser;
+  }
+
+  Future<String> getPDFCertificte({required String token}) async {
+    String uri = _baseUrl + '/viewpdfcertificadomsp/' + token;
+    String savePath = await getFilePath(token);
+    try {
+      await _dio.download(
+        uri,
+        savePath,
+        deleteOnError: true,
+      ); //.onError((error, stackTrace) => null);
+      return savePath;
+    } catch (e) {
+      return '';
+    }
+  }
+
+  Future<String> getFilePath(uniqueFileName) async {
+    String path = '';
+    Directory dir = await getApplicationDocumentsDirectory();
+    path = '${dir.path}/$uniqueFileName.pdf';
+    return path;
   }
 }

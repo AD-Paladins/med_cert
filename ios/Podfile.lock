@@ -2,12 +2,18 @@ PODS:
   - Flutter (1.0.0)
   - flutter_barcode_scanner (1.0.2):
     - Flutter
+  - open_file (0.0.1):
+    - Flutter
+  - path_provider (0.0.1):
+    - Flutter
   - shared_preferences (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_barcode_scanner (from `.symlinks/plugins/flutter_barcode_scanner/ios`)
+  - open_file (from `.symlinks/plugins/open_file/ios`)
+  - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
 
 EXTERNAL SOURCES:
@@ -15,14 +21,20 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_barcode_scanner:
     :path: ".symlinks/plugins/flutter_barcode_scanner/ios"
+  open_file:
+    :path: ".symlinks/plugins/open_file/ios"
+  path_provider:
+    :path: ".symlinks/plugins/path_provider/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
 
 SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_barcode_scanner: fc42adac0732eca7bd9d3d676b215bce5903f269
+  open_file: 02eb5cb6b21264bd3a696876f5afbfb7ca4f4b7d
+  path_provider: d1e9807085df1f9cc9318206cd649dc0b76be3de
   shared_preferences: 5033afbb22d372e15aff8ff766df9021b845f273
 
 PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
 
-COCOAPODS: 1.10.2
+COCOAPODS: 1.11.2

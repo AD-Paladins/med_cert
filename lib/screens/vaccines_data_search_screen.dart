@@ -1,23 +1,32 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:med_cert/entities/certificate.dart';
+import 'package:med_cert/screens/vaccines_data_result_screen.dart';
 import 'package:med_cert/services/vaccine_service.dart';
 import 'package:med_cert/entities/error_response.dart';
+import 'package:med_cert/util/date_utils.dart';
+import 'package:med_cert/widgets/alert_dialog_widget.dart';
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key, this.restorationId}) : super(key: key);
+class VaccinesDataSearchScreen extends StatefulWidget {
+  const VaccinesDataSearchScreen({Key? key, this.restorationId})
+      : super(key: key);
   final String? restorationId;
 
   @override
-  _SearchScreenState createState() => _SearchScreenState();
+  _VaccinesDataSearchScreenState createState() =>
+      _VaccinesDataSearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _VaccinesDataSearchScreenState extends State<VaccinesDataSearchScreen> {
+  Certificate? certificate;
   DateTime? _selectedDate;
   bool loading = false;
   TextEditingController dniInput = TextEditingController();
   TextEditingController dateInput = TextEditingController();
+  bool _isVaccineDataCharged = false;
   String _vaccineName = "";
+  int _vaccineNumber = 0;
+  DateTime _vaccineDate = DateTime.now();
   String _message = "";
 
   void _presentDatePicker() {
@@ -33,58 +42,50 @@ class _SearchScreenState extends State<SearchScreen> {
       }
       setState(() {
         _selectedDate = pickedDate;
-
         String formattedDate = "Selecionar una fecha";
         if (_selectedDate != null) {
-          formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate!);
+          formattedDate = DateTimeUtils.shared.stringFromDate(_selectedDate)!;
         }
         dateInput.text = formattedDate;
       });
     });
   }
 
-  void showAlertDialog(BuildContext context, String title, String message) {
-    // set up the button
-    Widget okButton = TextButton(
-      child: const Text("Aceptar"),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text(title),
-      content: Text(message),
-      actions: [
-        okButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
-
   Future<void> _getVaccinationData() async {
     try {
       var result = await VaccineService.shared
           .getVaccinationData(dni: dniInput.text, birthDate: dateInput.text);
-      Certificate certificate = result as Certificate;
+      certificate = result as Certificate;
       setState(() {
-        _vaccineName = certificate.data.datavacuna.first.nomvacuna;
-        _message = certificate.data.message;
+        if (certificate != null) {
+          _isVaccineDataCharged = true;
+          _vaccineName = certificate!.data.datavacuna.first.nomvacuna;
+          _vaccineNumber = certificate!.data.datavacuna.first.dosisaplicada;
+          _vaccineDate = certificate!.data.datavacuna.first.fechavacuna;
+          _message = certificate!.data.message;
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) =>
+                      VaccinesDataResultScreen(certificate: certificate!)));
+        }
       });
     } on ErrorResponse catch (error) {
-      showAlertDialog(context, "Error", error.data!.message);
+      if (error.data != null) {
+        AlertDialogWidget.showGenericDialog(
+            context, "Error", error.data!.message);
+      } else {
+        _showGenericError();
+      }
     } catch (e) {
-      showAlertDialog(context, "Error",
-          "Certificado no encontrado, cédula o fecha de nacimiento ingresados de manera incorrecta");
+      _showGenericError();
     }
+  }
+
+  _showGenericError({String? message}) {
+    String newMessage = message ??
+        "Certificado no encontrado, cédula o fecha de nacimiento ingresados de manera incorrecta";
+    AlertDialogWidget.showGenericDialog(context, "Error", newMessage);
   }
 
   @override
@@ -160,7 +161,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Container(
               height: 50,
               // width: 250,
@@ -169,8 +170,6 @@ class _SearchScreenState extends State<SearchScreen> {
               child: TextButton(
                 onPressed: () {
                   _getVaccinationData();
-                  // Navigator.push(
-                  //     context, MaterialPageRoute(builder: (_) => MainScreen()));
                 },
                 child: const Text(
                   'Buscar',
@@ -178,14 +177,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(_vaccineName),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(_message),
           ),
         ],
       ),
