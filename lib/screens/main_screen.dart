@@ -4,6 +4,7 @@ import 'package:med_cert/entities/certificate.dart';
 import 'package:med_cert/screens/vaccines_data_result_screen.dart';
 import 'package:med_cert/screens/vaccines_data_search_screen.dart';
 import 'package:med_cert/util/shared_preferences_util.dart';
+import 'package:med_cert/widgets/alert_dialog_widget.dart';
 import 'qr_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -33,6 +34,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _firtsInitApp(context);
     Icon arrowIcon = Platform.isAndroid
         ? const Icon(Icons.arrow_forward)
         : const Icon(Icons.arrow_forward_ios);
@@ -158,29 +160,35 @@ class _MainScreenState extends State<MainScreen> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (_) =>
-                  VaccinesDataResultScreen(certificate: userCertificate!)));
+              builder: (_) => VaccinesDataResultScreen(
+                    certificate: userCertificate!,
+                    isFromMain: true,
+                  )));
     }
-    // String dni = await SharedPreferencesUtil.getString(key: "dni") ?? "";
-    // String birthDate =
-    //     await SharedPreferencesUtil.getString(key: "birthDate") ?? "";
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //       builder: (context) => QrScreen(
-    //             birthDate: birthDate,
-    //             dni: dni,
-    //           )),
-    // );
   }
 
   _goToSearchCerttificate(BuildContext context) async {
-    String dni = await SharedPreferencesUtil.getString(key: "dni") ?? "";
-    String birthDate =
-        await SharedPreferencesUtil.getString(key: "birthDate") ?? "";
-    Navigator.push(
+    await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => VaccinesDataSearchScreen()),
+      MaterialPageRoute(builder: (context) => const VaccinesDataSearchScreen()),
+    ).then((value) => _getUserData());
+  }
+
+  _firtsInitApp(BuildContext context) async {
+    TextButton okButton = TextButton(
+      child: const Text("No volver a mostrar"),
+      onPressed: () {
+        SharedPreferencesUtil.storeInt(key: "firstInit", value: 1);
+        Navigator.pop(context);
+      },
     );
+
+    int isFirstInitApp =
+        await SharedPreferencesUtil.getInt(key: "firstInit") ?? 0;
+    if (isFirstInitApp == 0) {
+      AlertDialogWidget.showGenericDialog(context, "App gratuita!",
+          "Esa aplicación es gratuita e independiente del gobierno. \nUsa servicios abiertos por el Ministerio de Salud Pública del Ecuador para verificar tus datos de vacunación.",
+          extraButton: okButton);
+    }
   }
 }

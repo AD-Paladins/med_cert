@@ -16,6 +16,7 @@ dependencies:
   flutter_barcode_scanner: ^1.0.2
   # flutter_full_pdf_viewer: ^1.0.6
   font_awesome_flutter: ^9.2.0
+  flutter_progress_hud: ^2.0.0
   shared_preferences: ^2.0.8
   cupertino_icons: ^1.0.2
   path_provider: ^2.0.6

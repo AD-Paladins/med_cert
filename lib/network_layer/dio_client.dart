@@ -15,8 +15,8 @@ class DioClient {
 
     try {
       FormData formData = FormData.fromMap({
-        "form[identificacion]": dni,
-        "form[fechanacimiento]": birthDate,
+        "form[identificacion]": dni.trim(),
+        "form[fechanacimiento]": birthDate.trim(),
         "form[cttipoidentificacion]": 6
       });
       Response response = await _dio.post(_baseUrl + '/tomapacientemsp',

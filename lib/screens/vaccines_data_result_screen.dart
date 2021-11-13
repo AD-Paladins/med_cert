@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:med_cert/entities/certificate.dart';
 import 'package:med_cert/services/pdf_certificate_service.dart';
@@ -6,14 +8,20 @@ import 'package:med_cert/util/shared_preferences_util.dart';
 import 'package:med_cert/widgets/alert_dialog_widget.dart';
 import 'package:med_cert/widgets/vaccine_data_widget.dart';
 import 'package:open_file/open_file.dart';
+import 'package:flutter_progress_hud/flutter_progress_hud.dart';
+import 'package:path_provider/path_provider.dart';
+import "package:med_cert/extensions/string_extension.dart";
 
 class VaccinesDataResultScreen extends StatefulWidget {
   const VaccinesDataResultScreen(
-      {Key? key, this.restorationId, required this.certificate})
+      {Key? key,
+      this.restorationId,
+      required this.certificate,
+      required this.isFromMain})
       : super(key: key);
   final String? restorationId;
   final Certificate certificate;
-
+  final bool isFromMain;
   @override
   _VaccinesDataResultScreenState createState() =>
       _VaccinesDataResultScreenState();
@@ -24,12 +32,32 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
   bool loading = false;
   String? pdfPath = "";
 
-  Future<void> _getPDFVaccinationData(Certificate cert) async {
-    pdfPath = await VaccinePDFService.shared
-        .getPDFVaccinationData(token: cert.data.datapersona.first.idencrypt);
-    if (pdfPath != null) {
-      _isVaccinePdfDownloaded = true;
-      _openFileFrom(pdfPath!);
+  Future<String> getFilePath(uniqueFileName) async {
+    String path = '';
+    Directory dir = await getApplicationDocumentsDirectory();
+    path = '${dir.path}/$uniqueFileName.pdf';
+    return path;
+  }
+
+  Future<void> _getPDFVaccinationData(
+      BuildContext contact, Certificate cert) async {
+    if (widget.isFromMain) {
+      String filePath =
+          await getFilePath(cert.data.datapersona.first.idencrypt);
+      _openFileFrom(filePath);
+      return;
+    } else {
+      final progress = ProgressHUD.of(context);
+      progress!.show();
+      pdfPath = await VaccinePDFService.shared
+          .getPDFVaccinationData(token: cert.data.datapersona.first.idencrypt);
+      if (pdfPath != null) {
+        progress.dismiss();
+        setState(() {
+          _isVaccinePdfDownloaded = true;
+          _openFileFrom(pdfPath!);
+        });
+      }
     }
   }
 
@@ -75,101 +103,111 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
       appBar: AppBar(
         title: const Text('Resultado de búsqueda'),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-            child: Container(
-              height: 50,
-              decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(8)),
-              child: TextButton(
-                onPressed: () {
-                  if (_isVaccinePdfDownloaded && pdfPath != null) {
-                    _openFileFrom(pdfPath!);
-                  } else {
-                    _getPDFVaccinationData(widget.certificate);
-                  }
-                },
-                child: Text(
-                  _isVaccinePdfDownloaded ? "Mostrar PDF" : 'Descargar PDF',
-                  style: TextStyle(color: Colors.white, fontSize: 25),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: _isVaccinePdfDownloaded,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                    color: Colors.blue, borderRadius: BorderRadius.circular(8)),
-                child: TextButton(
-                  onPressed: () {
-                    _saveVaccinationData();
-                  },
-                  child: const Text(
-                    'Guardar como favorito',
-                    style: TextStyle(color: Colors.white, fontSize: 25),
+      body: ProgressHUD(
+        child: Builder(
+          builder: (context) => Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(8)),
+                  child: TextButton(
+                    onPressed: () {
+                      if (_isVaccinePdfDownloaded && pdfPath != null) {
+                        _openFileFrom(pdfPath!);
+                      } else {
+                        _getPDFVaccinationData(context, widget.certificate);
+                      }
+                    },
+                    child: Text(
+                      _isVaccinePdfDownloaded || widget.isFromMain
+                          ? "Mostrar PDF"
+                          : 'Descargar PDF',
+                      style: const TextStyle(color: Colors.white, fontSize: 21),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-          SizedBox(
-            height: 120,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: Text(
-                    userFullName,
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.primary),
-                    textAlign: TextAlign.center,
+              Visibility(
+                visible: _isVaccinePdfDownloaded,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                  child: Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(8)),
+                    child: TextButton(
+                      onPressed: () {
+                        _saveVaccinationData();
+                      },
+                      child: const Text(
+                        'Guardar como favorito',
+                        style: TextStyle(color: Colors.white, fontSize: 25),
+                      ),
+                    ),
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(
-                      "Fecha nacimiento: ",
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: Theme.of(context).colorScheme.primary),
-                      textAlign: TextAlign.center,
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                      child: Text(
+                        userFullName.cleanSpacesBewtween.capitalizeFirstofEach,
+                        style: TextStyle(
+                            fontSize: 21,
+                            fontWeight: FontWeight.w700,
+                            color: Theme.of(context).colorScheme.primary),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    Text(
-                      userBirthDate,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.primary),
-                      textAlign: TextAlign.center,
-                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Fecha nacimiento: ",
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Theme.of(context).colorScheme.primary),
+                          textAlign: TextAlign.center,
+                        ),
+                        Text(
+                          userBirthDate,
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.primary),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    )
                   ],
-                )
-              ],
-            ),
+                ),
+              ),
+
+              // ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: vaccines.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return VaccineDataWidget(
+                        name: vaccines[index].nomvacuna,
+                        date: vaccines[index].fechavacuna,
+                        number: vaccines[index].dosisaplicada);
+                  },
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: vaccines.length,
-              itemBuilder: (BuildContext context, int index) {
-                return VaccineDataWidget(
-                    name: vaccines[index].nomvacuna,
-                    date: vaccines[index].fechavacuna,
-                    number: vaccines[index].dosisaplicada);
-              },
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
