@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:med_cert/entities/certificate.dart';
+import 'package:med_cert/screens/qr_reader_screen.dart';
 import 'package:med_cert/screens/vaccines_data_result_screen.dart';
 import 'package:med_cert/screens/vaccines_data_search_screen.dart';
 import 'package:med_cert/util/shared_preferences_util.dart';
@@ -17,6 +18,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   Certificate? userCertificate;
+  bool _isShownInitMessage = false;
   @override
   void initState() {
     super.initState();
@@ -34,7 +36,11 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _firtsInitApp(context);
+    if (!_isShownInitMessage) {
+      _isShownInitMessage = true;
+      _firtsInitApp(context);
+    }
+
     Icon arrowIcon = Platform.isAndroid
         ? const Icon(Icons.arrow_forward)
         : const Icon(Icons.arrow_forward_ios);
@@ -95,9 +101,9 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
           Visibility(
-            visible: false,
+            visible: true,
             child: InkWell(
-              onTap: () => _goToGetCerttificate(context),
+              onTap: () => _goToQrReader(context),
               child: Card(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
@@ -114,7 +120,7 @@ class _MainScreenState extends State<MainScreen> {
                     subtitle: const Padding(
                         padding: EdgeInsets.only(top: 2, bottom: 2),
                         child: Text(
-                          "Leer QR que proporciona la app en otro dispositivo.",
+                          "Leer QR que proporciona esta app desde otro dispositivo.",
                           style: TextStyle(fontSize: 12),
                         )),
                   ),
@@ -171,6 +177,13 @@ class _MainScreenState extends State<MainScreen> {
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const VaccinesDataSearchScreen()),
+    ).then((value) => _getUserData());
+  }
+
+  _goToQrReader(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => QrReaderScreen()),
     ).then((value) => _getUserData());
   }
 
