@@ -28,7 +28,7 @@ class _FlutterTicketWidgetState extends State<FlutterTicketWidget> {
     return ClipPath(
       clipper: TicketClipper(),
       child: AnimatedContainer(
-        duration: Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
         width: widget.width,
         height: widget.height,
         child: widget.child,

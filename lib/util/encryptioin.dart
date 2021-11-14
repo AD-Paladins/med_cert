@@ -16,7 +16,10 @@ class EncryptionUtil {
     if (encrypter != null) {
       final encrypter = Encrypter(AES(key, padding: null));
       final decrypted = encrypter.decrypt(Encrypted.fromBase64(text), iv: iv);
-      return decrypted.trim();
+      decrypted.trim();
+      decrypted.replaceAll('', '');
+      decrypted.replaceAll(' ', '');
+      return decrypted;
     }
     return "";
   }

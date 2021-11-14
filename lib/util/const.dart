@@ -1,9 +1,8 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 class Constants {
-  static String appName = "Foody Bite";
+  static String appName = "MedCert";
 
   //Colors for theme
   static Color lightPrimary = Colors.blue.shade600;

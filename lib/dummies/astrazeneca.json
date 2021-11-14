@@ -1,28 +1,25 @@
 {
-    "status": true,
-    "message": "Estimado paciente usted consta en la Plataforma de Atenciones de Salud con:",
-    "vacunadata": [
-        {
-            "nombrevacuna": "ASTRAZENECA",
-            "dosis": 2,
-            "fechavacunacion": {
-                "date": "2021-08-18 00:00:00.000000",
-                "timezone_type": 3,
-                "timezone": "America\/Guayaquil"
+    "data": {
+        "status": true,
+        "message": "Paciente se encuentra vacunado",
+        "datavacuna": [
+            {
+                "nomvacuna": "CHADOX1S RECOMBINANTE ASTRAZENECA",
+                "dosisaplicada": 1,
+                "fechavacuna": "2021-05-03"
+            },
+            {
+                "nomvacuna": "CHADOX1S RECOMBINANTE ASTRAZENECA",
+                "dosisaplicada": 2,
+                "fechavacuna": "2021-05-31"
             }
-        },
-        {
-            "nombrevacuna": "ASTRAZENECA",
-            "dosis": 1,
-            "fechavacunacion": {
-                "date": "2021-08-18 00:00:00.000000",
-                "timezone_type": 3,
-                "timezone": "America\/Guayaquil"
+        ],
+        "datapersona": [
+            {
+                "fechanacimiento": "1967-5-11",
+                "nombres": "GARCIA VIDAL CARLOS ALFREDO",
+                "idencrypt": "+kzMp9CrkqxwZYPbsI@@@hvg=="
             }
-        }
-    ],
-    "pacientedata": {
-        "idpacinete": 1234452,
-        "correo": "xxxxxxxxx@gmail.com"
+        ]
     }
 }
