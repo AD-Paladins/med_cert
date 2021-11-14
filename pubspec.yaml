@@ -28,9 +28,11 @@ dependencies:
 
   fqreader: ^0.3.0
   flustars: ^2.0.1
-  cool_ui: ^1.1.0
-  image_picker: ^0.8.4+4
+  # cool_ui: ^1.1.0
+  # image_picker: ^0.8.4+4
   
+  sqflite: ^2.0.0+4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

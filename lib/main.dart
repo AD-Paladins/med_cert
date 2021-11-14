@@ -3,7 +3,7 @@ import 'package:med_cert/screens/main_screen.dart';
 import 'package:med_cert/util/const.dart';
 
 void main() async {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -19,8 +19,8 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: Constants.appName,
       theme: Constants.lightTheme,
-      darkTheme: Constants.darkTheme,
-      home: MainScreen(),
+      // darkTheme: Constants.darkTheme,
+      home: const MainScreen(),
     );
   }
 }

@@ -24,12 +24,6 @@ class _VaccinesDataSearchScreenState extends State<VaccinesDataSearchScreen> {
   bool loading = false;
   TextEditingController dniInput = TextEditingController();
   TextEditingController dateInput = TextEditingController();
-  bool _isVaccineDataCharged = false;
-  String _vaccineName = "";
-  int _vaccineNumber = 0;
-  DateTime _vaccineDate = DateTime.now();
-  String _message = "";
-  bool _isLoading = false;
 
   void _presentDatePicker() {
     // showDatePicker is a pre-made funtion of Flutter
@@ -63,11 +57,6 @@ class _VaccinesDataSearchScreenState extends State<VaccinesDataSearchScreen> {
       progress.dismiss();
       setState(() {
         if (certificate != null) {
-          _isVaccineDataCharged = true;
-          _vaccineName = certificate!.data.datavacuna.first.nomvacuna;
-          _vaccineNumber = certificate!.data.datavacuna.first.dosisaplicada;
-          _vaccineDate = certificate!.data.datavacuna.first.fechavacuna;
-          _message = certificate!.data.message;
           Navigator.push(
               context,
               MaterialPageRoute(

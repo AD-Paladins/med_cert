@@ -94,7 +94,7 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
   }
 
   Future<void> _getPDFVaccinationData(
-      BuildContext contact, Certificate cert) async {
+      BuildContext context, Certificate cert) async {
     if (widget.isFromMain) {
       String filePath =
           await getFilePath(cert.data.datapersona.first.idencrypt);
