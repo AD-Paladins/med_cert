@@ -6,7 +6,6 @@ import 'package:med_cert/screens/vaccines_data_result_screen.dart';
 import 'package:med_cert/screens/vaccines_data_search_screen.dart';
 import 'package:med_cert/util/shared_preferences_util.dart';
 import 'package:med_cert/widgets/alert_dialog_widget.dart';
-import 'qr_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key, this.restorationId}) : super(key: key);
@@ -183,7 +182,7 @@ class _MainScreenState extends State<MainScreen> {
   _goToQrReader(BuildContext context) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => QrReaderScreen()),
+      MaterialPageRoute(builder: (context) => const QrReaderScreen()),
     ).then((value) => _getUserData());
   }
 

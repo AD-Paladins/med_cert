@@ -22,8 +22,8 @@ class _QrScreenState extends State<QrScreen> {
 
     String encrypted =
         EncryptionUtil.shared.getEncryptedStringFrom(text: dataString);
-    String decrypted =
-        EncryptionUtil.shared.getDecryptedStringFrom(text: encrypted);
+    // String decrypted =
+    // EncryptionUtil.shared.getDecryptedStringFrom(text: encrypted);
 
     var qrImage = QrImage(
       data: encrypted,
@@ -38,7 +38,9 @@ class _QrScreenState extends State<QrScreen> {
       // ),
     );
     bool status = false;
+    // ignore: dead_code
     Color statusColor = status ? Colors.green.shade400 : Colors.red.shade700;
+    // ignore: dead_code
     String statusString = status ? "Vaccinated: YES" : "Vaccinated: NO";
     return Scaffold(
       appBar: AppBar(
@@ -65,7 +67,7 @@ class _QrScreenState extends State<QrScreen> {
                       ),
                       child: Center(
                         child: Padding(
-                          padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                          padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                           child: Text(statusString,
                               style: TextStyle(
                                   color: statusColor,
@@ -112,7 +114,7 @@ class _QrScreenState extends State<QrScreen> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: 8.0),
+                  padding: const EdgeInsets.only(top: 8.0),
                   child: ticketDetailsWidget(
                       'Name', 'Andres David', 'Date Vaccination', '24-12-2018'),
                 ),

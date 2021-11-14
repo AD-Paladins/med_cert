@@ -25,3 +25,4 @@ Thanks for the resources to:
 
 <div>Icons made by <a href="" title="Kiranshastry">Kiranshastry</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
+<a target="_blank" href="https://icons8.com/icon/uAACeSzPCBZC/coronavirus-check">Coronavirus Check</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>

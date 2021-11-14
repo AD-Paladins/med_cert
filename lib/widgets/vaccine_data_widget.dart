@@ -29,7 +29,7 @@ class _VaccineDataWidgetState extends State<VaccineDataWidget> {
       child: Row(
         children: [
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: SizedBox(
               height: 65,
               child: Image.asset(
