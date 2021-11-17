@@ -1,5 +1,6 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
+import 'package:med_cert/db/models/vaccination_status.dart';
 import 'package:med_cert/entities/certificate.dart';
 import 'package:med_cert/screens/qr_reader_screen.dart';
 import 'package:med_cert/screens/vaccines_data_result_screen.dart';
@@ -31,6 +32,46 @@ class _MainScreenState extends State<MainScreen> {
         userCertificate = Certificate.fromJson(jsonCertificate);
       });
     }
+
+    String json = '''
+    {
+    "data": {
+        "status": true,
+        "message": "Paciente se encuentra vacunado",
+        "datavacuna": [
+            {
+                "nomvacuna": "CoronaVac SINOVAC",
+                "dosisaplicada": 2,
+                "fechavacuna": "yyyy-mm-dd"
+            },
+            {
+                "nomvacuna": "CoronaVac SINOVAC",
+                "dosisaplicada": 1,
+                "fechavacuna": "2021-08-18"
+            }
+        ],
+        "datapersona": [
+            {
+                "fechanacimiento": "1888-8-18",
+                "nombres": "MONCAYO PIGUABE DON RAMON",
+                "idencrypt": "xxxxx@@@xxxxxxxxx+w=="
+            }
+        ]
+    }
+}
+    ''';
+    VaccinationStatusModel item = VaccinationStatusModel(
+        id: 0,
+        name: "PRUEBA",
+        identification: "0000000000",
+        birthDate: DateTime.now(),
+        json: json);
+
+    // var itemReturn = await TodoProvider().insert(item);
+    // print(itemReturn.toString());
+
+    var listvaccines = await TodoProvider().getAllVaccinationStatus();
+    print(listvaccines);
   }
 
   @override
