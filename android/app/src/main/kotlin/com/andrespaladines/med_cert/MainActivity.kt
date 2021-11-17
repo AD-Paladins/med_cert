@@ -1,4 +1,4 @@
-package com.example.med_cert
+package com.andrespaladines.med_cert
 
 import io.flutter.embedding.android.FlutterActivity
 
