@@ -1,12 +1,18 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:med_cert/db/models/vaccination_status.dart';
 import 'package:med_cert/entities/certificate.dart';
 import 'package:med_cert/screens/qr_reader_screen.dart';
 import 'package:med_cert/screens/vaccines_data_result_screen.dart';
 import 'package:med_cert/screens/vaccines_data_search_screen.dart';
+import 'package:med_cert/services/pdf_certificate_service.dart';
+import 'package:med_cert/util/encryptioin.dart';
 import 'package:med_cert/util/shared_preferences_util.dart';
 import 'package:med_cert/widgets/alert_dialog_widget.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:open_file/open_file.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key, this.restorationId}) : super(key: key);
@@ -89,114 +95,118 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: const Text('Certificado COVID'),
       ),
-      body: Column(
-        children: [
-          Visibility(
-              visible: userCertificate != null,
-              child: InkWell(
-                onTap: () => _goToGetCerttificate(context),
+      body: ProgressHUD(
+        child: Builder(
+          builder: (context) => Column(
+            children: [
+              Visibility(
+                  visible: userCertificate != null,
+                  child: InkWell(
+                    onTap: () => _goToGetCerttificate(context),
+                    child: Card(
+                      child: ListTile(
+                        leading: Image.asset(
+                          "assets/icons/policy.png",
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                        trailing: arrowIcon,
+                        title: const Text(
+                          "Revisa el estado de tu certificado",
+                          style: TextStyle(fontSize: 19),
+                        ),
+                        subtitle: const Padding(
+                            padding: EdgeInsets.only(top: 2, bottom: 2),
+                            child: Text(
+                              "Aquí se muestra el certificado que elegiste como el principal.",
+                              style: TextStyle(fontSize: 12),
+                            )),
+                      ),
+                    ),
+                  )),
+              InkWell(
+                onTap: () => _goToSearchCerttificate(context),
                 child: Card(
-                  child: ListTile(
-                    leading: Image.asset(
-                      "assets/icons/policy.png",
-                      color: Theme.of(context).colorScheme.onSecondary,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      leading: Image.asset(
+                        "assets/icons/search-file.png",
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                      trailing: arrowIcon,
+                      title: const Text(
+                        "Buscar certificado",
+                        style: TextStyle(fontSize: 19),
+                      ),
+                      subtitle: const Padding(
+                          padding: EdgeInsets.only(top: 2, bottom: 2),
+                          child: Text(
+                            "Necesitas el número de cédula y fecha de nacimiento.",
+                            style: TextStyle(fontSize: 12),
+                          )),
                     ),
-                    trailing: arrowIcon,
-                    title: const Text(
-                      "Revisa el estado de tu certificado",
-                      style: TextStyle(fontSize: 19),
-                    ),
-                    subtitle: const Padding(
-                        padding: EdgeInsets.only(top: 2, bottom: 2),
-                        child: Text(
-                          "Aquí se muestra el certificado que elegiste como el principal.",
-                          style: TextStyle(fontSize: 12),
-                        )),
-                  ),
-                ),
-              )),
-          InkWell(
-            onTap: () => _goToSearchCerttificate(context),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: ListTile(
-                  leading: Image.asset(
-                    "assets/icons/search-file.png",
-                    color: Theme.of(context).colorScheme.onSecondary,
-                  ),
-                  trailing: arrowIcon,
-                  title: const Text(
-                    "Buscar certificado",
-                    style: TextStyle(fontSize: 19),
-                  ),
-                  subtitle: const Padding(
-                      padding: EdgeInsets.only(top: 2, bottom: 2),
-                      child: Text(
-                        "Necesitas el número de cédula y fecha de nacimiento.",
-                        style: TextStyle(fontSize: 12),
-                      )),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: true,
-            child: InkWell(
-              onTap: () => _goToQrReader(context),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: ListTile(
-                    leading: Image.asset(
-                      "assets/icons/search-qr.png",
-                      color: Theme.of(context).colorScheme.onSecondary,
-                    ),
-                    trailing: arrowIcon,
-                    title: const Text(
-                      "Lectura de código QR.",
-                      style: TextStyle(fontSize: 19),
-                    ),
-                    subtitle: const Padding(
-                        padding: EdgeInsets.only(top: 2, bottom: 2),
-                        child: Text(
-                          "Leer QR que proporciona esta app desde otro dispositivo.",
-                          style: TextStyle(fontSize: 12),
-                        )),
                   ),
                 ),
               ),
-            ),
-          ),
-          Visibility(
-            visible: false,
-            child: InkWell(
-              onTap: () => _goToGetCerttificate(context),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: ListTile(
-                    leading: Image.asset(
-                      "assets/icons/history.png",
-                      color: Theme.of(context).colorScheme.onSecondary,
+              Visibility(
+                visible: true,
+                child: InkWell(
+                  onTap: () => _goToQrReader(context),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: ListTile(
+                        leading: Image.asset(
+                          "assets/icons/search-qr.png",
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                        trailing: arrowIcon,
+                        title: const Text(
+                          "Lectura de código QR.",
+                          style: TextStyle(fontSize: 19),
+                        ),
+                        subtitle: const Padding(
+                            padding: EdgeInsets.only(top: 2, bottom: 2),
+                            child: Text(
+                              "Leer QR que proporciona esta app desde otro dispositivo.",
+                              style: TextStyle(fontSize: 12),
+                            )),
+                      ),
                     ),
-                    trailing: arrowIcon,
-                    title: const Text(
-                      "Historial",
-                      style: TextStyle(fontSize: 19),
-                    ),
-                    subtitle: const Padding(
-                        padding: EdgeInsets.only(top: 2, bottom: 2),
-                        child: Text(
-                          "Revisa el estado de tus consultas previas.",
-                          style: TextStyle(fontSize: 12),
-                        )),
                   ),
                 ),
               ),
-            ),
+              Visibility(
+                visible: false,
+                child: InkWell(
+                  onTap: () => _goToGetCerttificate(context),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: ListTile(
+                        leading: Image.asset(
+                          "assets/icons/history.png",
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                        trailing: arrowIcon,
+                        title: const Text(
+                          "Historial",
+                          style: TextStyle(fontSize: 19),
+                        ),
+                        subtitle: const Padding(
+                            padding: EdgeInsets.only(top: 2, bottom: 2),
+                            child: Text(
+                              "Revisa el estado de tus consultas previas.",
+                              style: TextStyle(fontSize: 12),
+                            )),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -221,10 +231,45 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   _goToQrReader(BuildContext context) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const QrReaderScreen()),
-    ).then((value) => _getUserData());
+    String barcodeScanRes;
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.QR);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+    if (barcodeScanRes == "-1" || int.parse(barcodeScanRes) == -1) {
+      return;
+    }
+    if (!mounted) return;
+    String decrypted =
+        EncryptionUtil.shared.getDecryptedStringFrom(text: barcodeScanRes);
+    if (decrypted.isEmpty) {
+      TextButton okButton = TextButton(
+        child: const Text("Internar nuevamente"),
+        onPressed: () {
+          Navigator.pop(context);
+          _goToQrReader(context);
+        },
+      );
+      AlertDialogWidget.showGenericDialog(
+          context, "Lector QR", "El QR no es válido.",
+          extraButton: okButton);
+      return;
+    }
+    final progress = ProgressHUD.of(context);
+    progress!.show();
+    String? pdfPath =
+        await VaccinePDFService.shared.getPDFVaccinationData(token: decrypted);
+    setState(() {
+      if (pdfPath != null) {
+        progress.dismiss();
+        setState(() {
+          _openFileFrom(pdfPath, context);
+        });
+      }
+    });
   }
 
   _firtsInitApp(BuildContext context) async {
@@ -243,5 +288,15 @@ class _MainScreenState extends State<MainScreen> {
           "Esa aplicación es gratuita e independiente del gobierno. \nUsa servicios abiertos por el Ministerio de Salud Pública del Ecuador para verificar tus datos de vacunación.",
           extraButton: okButton);
     }
+  }
+
+  Future<void> _openFileFrom(String path, BuildContext context) async {
+    final progress = ProgressHUD.of(context);
+    progress!.showWithText(
+      "Cargando PDF...",
+    );
+    final _result =
+        await OpenFile.open(path); //.then((value) => deleteFile(path));
+    progress.dismiss();
   }
 }

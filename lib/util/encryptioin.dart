@@ -13,13 +13,17 @@ class EncryptionUtil {
   }
 
   String getDecryptedStringFrom({required String text}) {
-    if (encrypter != null) {
-      final encrypter = Encrypter(AES(key, padding: null));
-      final decrypted = encrypter.decrypt(Encrypted.fromBase64(text), iv: iv);
-      decrypted.trim();
-      decrypted.replaceAll('', '');
-      decrypted.replaceAll(' ', '');
-      return decrypted;
+    try {
+      if (encrypter != null) {
+        final encrypter = Encrypter(AES(key, padding: null));
+        final decrypted = encrypter.decrypt(Encrypted.fromBase64(text), iv: iv);
+        decrypted.trim();
+        decrypted.replaceAll('', '');
+        decrypted.replaceAll(' ', '');
+        return decrypted;
+      }
+    } catch (e) {
+      return "";
     }
     return "";
   }

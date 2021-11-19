@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:fqreader/fqreader.dart';
 import 'package:flustars/flustars.dart';
+import 'package:med_cert/widgets/alert_dialog_widget.dart';
 import 'package:open_file/open_file.dart';
 import 'package:med_cert/services/pdf_certificate_service.dart';
 import 'package:med_cert/util/encryptioin.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 class QrReaderScreen extends StatefulWidget {
   const QrReaderScreen({Key? key}) : super(key: key);
@@ -21,6 +24,46 @@ class _QrReaderScreenState extends State<QrReaderScreen> {
   void initState() {
     super.initState();
     scanView = GlobalKey<ScanViewState>();
+    scanQR();
+  }
+
+  Future<void> scanQR() async {
+    String barcodeScanRes;
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.QR);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    if (!mounted) return;
+    String decrypted =
+        EncryptionUtil.shared.getDecryptedStringFrom(text: barcodeScanRes);
+    if (decrypted.isEmpty) {
+      TextButton okButton = TextButton(
+        child: const Text("Internar nuevamente"),
+        onPressed: () {
+          scanQR();
+        },
+      );
+      AlertDialogWidget.showGenericDialog(
+          context, "Lector QR", "El QR no es válido.",
+          extraButton: okButton);
+      return;
+    }
+    final progress = ProgressHUD.of(context);
+    progress!.show();
+    String? pdfPath =
+        await VaccinePDFService.shared.getPDFVaccinationData(token: decrypted);
+    setState(() {
+      if (pdfPath != null) {
+        progress.dismiss();
+        setState(() {
+          _openFileFrom(pdfPath);
+        });
+      }
+    });
   }
 
   Future<void> _openFileFrom(String path) async {
@@ -46,15 +89,6 @@ class _QrReaderScreenState extends State<QrReaderScreen> {
   @override
   Widget build(BuildContext context) {
     ScreenUtil.getInstance();
-    Size pictureSize = Size(
-        ScreenUtil.getScreenW(context),
-        ScreenUtil.getScreenH(context) -
-            ScreenUtil.getStatusBarH(context) -
-            75);
-
-    Size scanSize = Size(ScreenUtil.getScreenW(context) * 0.8,
-        ScreenUtil.getScreenW(context) * 0.8);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Plugin example app'),
@@ -75,31 +109,31 @@ class _QrReaderScreenState extends State<QrReaderScreen> {
                       color: Theme.of(context).colorScheme.onPrimary),
                 ),
               ),
-              Center(
-                child: ScanView(
-                  key: scanView,
-                  scanAilgn: Alignment.center,
-                  scanSize: pictureSize,
-                  viewSize: scanSize,
-                  maskColor: Colors.white,
-                  devicePixelRatio: ScreenUtil.getScreenDensity(context),
-                  onScan: (result) async {
-                    String decrypted = EncryptionUtil.shared
-                        .getDecryptedStringFrom(text: result.data);
-                    final progress = ProgressHUD.of(context);
-                    progress!.show();
-                    String? pdfPath = await VaccinePDFService.shared
-                        .getPDFVaccinationData(token: decrypted);
-                    if (pdfPath != null) {
-                      progress.dismiss();
-                      setState(() {
-                        _openFileFrom(pdfPath);
-                      });
-                    }
-                    return false;
-                  },
-                ),
-              )
+              // Center(
+              //   child: ScanView(
+              //     key: scanView,
+              //     scanAilgn: Alignment.center,
+              //     scanSize: pictureSize,
+              //     viewSize: scanSize,
+              //     maskColor: Colors.white,
+              //     devicePixelRatio: ScreenUtil.getScreenDensity(context),
+              //     onScan: (result) async {
+              //       String decrypted = EncryptionUtil.shared
+              //           .getDecryptedStringFrom(text: result.data);
+              //       final progress = ProgressHUD.of(context);
+              //       progress!.show();
+              //       String? pdfPath = await VaccinePDFService.shared
+              //           .getPDFVaccinationData(token: decrypted);
+              //       if (pdfPath != null) {
+              //         progress.dismiss();
+              //         setState(() {
+              //           _openFileFrom(pdfPath);
+              //         });
+              //       }
+              //       return false;
+              //     },
+              //   ),
+              // )
             ],
           ),
         ),
