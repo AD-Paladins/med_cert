@@ -21,6 +21,7 @@ class VaccinesDataResultScreen extends StatefulWidget {
       this.restorationId,
       this.identification,
       this.birthDate,
+      this.json,
       required this.certificate,
       required this.isFromMain})
       : super(key: key);
@@ -29,6 +30,7 @@ class VaccinesDataResultScreen extends StatefulWidget {
   final bool isFromMain;
   final String? identification;
   final String? birthDate;
+  final String? json;
 
   @override
   _VaccinesDataResultScreenState createState() =>
@@ -155,20 +157,33 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
 
   _saveSearchDataIfNeeded() async {
     if (widget.identification != null && widget.birthDate != null) {
+      String encryptedIdentification = EncryptionUtil.shared
+          .getEncryptedStringFrom(text: widget.identification!);
+      String encryptedJSON = EncryptionUtil.shared
+          .getEncryptedStringFrom(text: widget.certificate.json.toString());
+
+      DateTime birthDate =
+          DateTimeUtils.shared.dateFromString(widget.birthDate!) ??
+              DateTime.now();
+
       VaccinationStatusModel item = VaccinationStatusModel(
           id: 0,
-          name: "PRUEBA",
-          identification: "0000000000",
-          birthDate: DateTime.now(),
-          json: "json",
+          name: widget.certificate.data.datapersona.first.nombres,
+          identification: encryptedIdentification,
+          birthDate: birthDate,
+          json: encryptedJSON,
           isFavorite: false);
+      var itemReturn = await TodoProvider().insert(item);
+      print(itemReturn);
 
-      // var itemReturn = await TodoProvider().insert(item);
-      // print(itemReturn.toString());
-      String asdasd =
-          await EncryptionUtil.shared.getEncryptedStringFrom(text: "text");
       var listvaccines = await TodoProvider().getAllVaccinationStatus();
-      print(listvaccines);
+      if (listvaccines != null) {
+        for (VaccinationStatusModel vaccine in listvaccines) {
+          String newJson =
+              EncryptionUtil.shared.getDecryptedStringFrom(text: vaccine.json);
+          print(newJson);
+        }
+      }
     }
   }
 

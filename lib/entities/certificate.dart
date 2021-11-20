@@ -11,15 +11,13 @@ Certificate certificateFromJson(String str) =>
 String certificateToJson(Certificate data) => json.encode(data.toJson());
 
 class Certificate {
-  Certificate({
-    required this.data,
-  });
+  Certificate({required this.data, required this.json});
 
   Data data;
+  Map json;
 
-  factory Certificate.fromJson(dynamic json) => Certificate(
-        data: Data.fromJson(json["data"]),
-      );
+  factory Certificate.fromJson(dynamic json) =>
+      Certificate(data: Data.fromJson(json["data"]), json: json);
 
   Map<String, dynamic> toJson() => {
         "data": data.toJson(),

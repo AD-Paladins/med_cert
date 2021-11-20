@@ -17,7 +17,7 @@ class DataBaseClient {
   }
 
   Future<void> initDataBase(String path) async {
-    db = await openDatabase(path, version: 1,
+    db = await openDatabase(path, version: 3,
         onCreate: (Database db, int version) async {
       await db.execute('''
         create table $tableVaccinationStatus ( 
@@ -28,6 +28,12 @@ class DataBaseClient {
           $json text not null,
           $isFavorite text not null)
         ''');
+    }, onUpgrade: (Database db, int oldVersion, int newVersion) async {
+      // If you need to add a column
+      if (newVersion > oldVersion) {
+        db.execute(
+            "alter table $tableVaccinationStatus add column $isFavorite text not null default \"\"");
+      }
     });
   }
 
