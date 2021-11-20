@@ -71,11 +71,13 @@ class _MainScreenState extends State<MainScreen> {
         name: "PRUEBA",
         identification: "0000000000",
         birthDate: DateTime.now(),
-        json: json);
+        json: json,
+        isFavorite: false);
 
     // var itemReturn = await TodoProvider().insert(item);
     // print(itemReturn.toString());
-
+    String asdasd =
+        await EncryptionUtil.shared.getEncryptedStringFrom(text: "text");
     var listvaccines = await TodoProvider().getAllVaccinationStatus();
     print(listvaccines);
   }
@@ -217,9 +219,7 @@ class _MainScreenState extends State<MainScreen> {
           context,
           MaterialPageRoute(
               builder: (_) => VaccinesDataResultScreen(
-                    certificate: userCertificate!,
-                    isFromMain: true,
-                  )));
+                  certificate: userCertificate!, isFromMain: true)));
     }
   }
 
@@ -235,7 +235,6 @@ class _MainScreenState extends State<MainScreen> {
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6666', 'Cancel', true, ScanMode.QR);
-      print(barcodeScanRes);
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
     }

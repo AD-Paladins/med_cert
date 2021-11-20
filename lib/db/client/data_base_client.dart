@@ -1,6 +1,13 @@
 import 'package:sqflite/sqflite.dart';
 
 class DataBaseClient {
+  final String tableVaccinationStatus = 'vaccination_status';
+  final String columnId = '_id';
+  final String name = 'name';
+  final String identification = 'identification';
+  final String birthDate = 'birthDate';
+  final String json = 'json';
+  final String isFavorite = 'isFavorite';
   static const dbName = "medcert";
   static DataBaseClient shared = DataBaseClient();
   Database? db;
@@ -18,7 +25,8 @@ class DataBaseClient {
           $name text not null,
           $identification text not null,
           $birthDate text not null,
-          $json text not null)
+          $json text not null,
+          $isFavorite text not null)
         ''');
     });
   }
@@ -28,11 +36,4 @@ class DataBaseClient {
       db!.close();
     }
   }
-
-  final String tableVaccinationStatus = 'vaccination_status';
-  final String columnId = '_id';
-  final String name = 'name';
-  final String identification = 'identification';
-  final String birthDate = 'birthDate';
-  final String json = 'json';
 }

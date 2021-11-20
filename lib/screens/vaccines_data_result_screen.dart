@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:med_cert/db/models/vaccination_status.dart';
 import 'package:med_cert/entities/certificate.dart';
 import 'package:med_cert/services/pdf_certificate_service.dart';
 import 'package:med_cert/util/date_utils.dart';
@@ -18,12 +19,17 @@ class VaccinesDataResultScreen extends StatefulWidget {
   const VaccinesDataResultScreen(
       {Key? key,
       this.restorationId,
+      this.identification,
+      this.birthDate,
       required this.certificate,
       required this.isFromMain})
       : super(key: key);
   final String? restorationId;
   final Certificate certificate;
   final bool isFromMain;
+  final String? identification;
+  final String? birthDate;
+
   @override
   _VaccinesDataResultScreenState createState() =>
       _VaccinesDataResultScreenState();
@@ -144,6 +150,26 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
   @override
   void initState() {
     super.initState();
+    _saveSearchDataIfNeeded();
+  }
+
+  _saveSearchDataIfNeeded() async {
+    if (widget.identification != null && widget.birthDate != null) {
+      VaccinationStatusModel item = VaccinationStatusModel(
+          id: 0,
+          name: "PRUEBA",
+          identification: "0000000000",
+          birthDate: DateTime.now(),
+          json: "json",
+          isFavorite: false);
+
+      // var itemReturn = await TodoProvider().insert(item);
+      // print(itemReturn.toString());
+      String asdasd =
+          await EncryptionUtil.shared.getEncryptedStringFrom(text: "text");
+      var listvaccines = await TodoProvider().getAllVaccinationStatus();
+      print(listvaccines);
+    }
   }
 
   @override

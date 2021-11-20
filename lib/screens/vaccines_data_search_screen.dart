@@ -63,6 +63,8 @@ class _VaccinesDataSearchScreenState extends State<VaccinesDataSearchScreen> {
                   builder: (_) => VaccinesDataResultScreen(
                         certificate: certificate!,
                         isFromMain: false,
+                        identification: dniInput.text,
+                        birthDate: dateInput.text,
                       )));
         }
       });
