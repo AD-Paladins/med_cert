@@ -82,13 +82,14 @@ class TodoProvider {
         DateTime newDate =
             DateTimeUtils.shared.dateFromString(maps[i][birthDate]) ??
                 DateTime.now();
+        bool isFav = maps[i][isFavorite].toString().toLowerCase() == "true";
         return VaccinationStatusModel(
             id: maps[i][columnId],
             name: maps[i][name],
             identification: maps[i][identification],
             birthDate: newDate,
             json: maps[i][json],
-            isFavorite: maps[i][isFavorite]);
+            isFavorite: isFav);
       });
     }
   }

@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:med_cert/db/models/vaccination_status.dart';
 import 'package:med_cert/entities/certificate.dart';
+import 'package:med_cert/entities/error_response.dart';
 import 'package:med_cert/services/pdf_certificate_service.dart';
+import 'package:med_cert/services/vaccine_service.dart';
 import 'package:med_cert/util/date_utils.dart';
 import 'package:med_cert/util/encryptioin.dart';
 import 'package:med_cert/util/shared_preferences_util.dart';
@@ -38,9 +40,17 @@ class VaccinesDataResultScreen extends StatefulWidget {
 }
 
 class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
+  Certificate? newCertificate;
   bool _isVaccinePdfDownloaded = false;
   bool loading = false;
   String? pdfPath = "";
+
+  @override
+  void initState() {
+    super.initState();
+    newCertificate = widget.certificate;
+    _saveSearchDataIfNeeded();
+  }
 
   Future<String> getFilePath(uniqueFileName) async {
     String path = '';
@@ -50,7 +60,7 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
   }
 
   Widget _myQrImage() {
-    String dataString = widget.certificate.data.datapersona.first.idencrypt;
+    String dataString = newCertificate!.data.datapersona.first.idencrypt;
     String encrypted =
         EncryptionUtil.shared.getEncryptedStringFrom(text: dataString);
 
@@ -127,9 +137,34 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
     final _result = await OpenFile.open(path);
   }
 
+  Future<void> _getVaccinationData(
+      BuildContext context, String identification, String birthDate) async {
+    final progress = ProgressHUD.of(context);
+    progress!.show();
+    try {
+      var result = await VaccineService.shared
+          .getVaccinationData(dni: identification, birthDate: birthDate);
+      progress.dismiss();
+      setState(() {
+        newCertificate = result as Certificate;
+      });
+    } on ErrorResponse catch (error) {
+      progress.dismiss();
+      if (error.data != null) {
+        AlertDialogWidget.showGenericDialog(
+            context, "Error", error.data!.message);
+      } else {
+        _showGenericError();
+      }
+    } catch (e) {
+      progress.dismiss();
+      _showGenericError();
+    }
+  }
+
   _saveVaccinationData() async {
     bool? savedData = await SharedPreferencesUtil.storeJson(
-        key: 'user', json: widget.certificate.toJson());
+        key: 'user', json: newCertificate!.toJson());
     if (savedData) {
       _showGenericSuccess(message: "Tu certificado se guardó exitósamente.");
     } else {
@@ -149,18 +184,12 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
     AlertDialogWidget.showGenericDialog(context, "Error", newMessage);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _saveSearchDataIfNeeded();
-  }
-
   _saveSearchDataIfNeeded() async {
     if (widget.identification != null && widget.birthDate != null) {
       String encryptedIdentification = EncryptionUtil.shared
           .getEncryptedStringFrom(text: widget.identification!);
       String encryptedJSON = EncryptionUtil.shared
-          .getEncryptedStringFrom(text: widget.certificate.json.toString());
+          .getEncryptedStringFrom(text: newCertificate!.json.toString());
 
       DateTime birthDate =
           DateTimeUtils.shared.dateFromString(widget.birthDate!) ??
@@ -168,7 +197,7 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
 
       VaccinationStatusModel item = VaccinationStatusModel(
           id: 0,
-          name: widget.certificate.data.datapersona.first.nombres,
+          name: newCertificate!.data.datapersona.first.nombres,
           identification: encryptedIdentification,
           birthDate: birthDate,
           json: encryptedJSON,
@@ -189,11 +218,11 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String userFullName = widget.certificate.data.datapersona.first.nombres;
+    String userFullName = newCertificate!.data.datapersona.first.nombres;
     String userBirthDate = DateTimeUtils.shared.stringDateFromString(
-            widget.certificate.data.datapersona.first.fechanacimiento) ??
+            newCertificate!.data.datapersona.first.fechanacimiento) ??
         "--/--/--";
-    List<Datavacuna> vaccines = widget.certificate.data.datavacuna;
+    List<Datavacuna> vaccines = newCertificate!.data.datavacuna;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Resultado de búsqueda'),
@@ -202,6 +231,46 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
         child: Builder(
           builder: (context) => Column(
             children: [
+              Visibility(
+                visible: _isVaccinePdfDownloaded || widget.isFromMain,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                  child: Container(
+                    height: 50,
+                    width: 180,
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(8)),
+                    child: TextButton(
+                      onPressed: () {
+                        if (widget.identification == null ||
+                            widget.birthDate == null) {
+                          return;
+                        }
+                        _getVaccinationData(
+                            context, widget.identification!, widget.birthDate!);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text(
+                            'Actualizar datos',
+                            style: TextStyle(color: Colors.white, fontSize: 25),
+                          ),
+                          SizedBox(
+                            height: 36,
+                            width: 36,
+                            child: Icon(
+                              Icons.refresh,
+                              color: Colors.white,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
                 child: Container(
@@ -214,7 +283,7 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
                       if (_isVaccinePdfDownloaded && pdfPath != null) {
                         _openFileFrom(pdfPath!);
                       } else {
-                        _getPDFVaccinationData(context, widget.certificate);
+                        _getPDFVaccinationData(context, newCertificate!);
                       }
                     },
                     child: Text(

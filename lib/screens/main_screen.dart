@@ -7,6 +7,7 @@ import 'package:med_cert/entities/certificate.dart';
 import 'package:med_cert/screens/qr_reader_screen.dart';
 import 'package:med_cert/screens/vaccines_data_result_screen.dart';
 import 'package:med_cert/screens/vaccines_data_search_screen.dart';
+import 'package:med_cert/screens/vacines_search_history_screen.dart';
 import 'package:med_cert/services/pdf_certificate_service.dart';
 import 'package:med_cert/util/encryptioin.dart';
 import 'package:med_cert/util/shared_preferences_util.dart';
@@ -179,9 +180,9 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
               Visibility(
-                visible: false,
+                visible: true,
                 child: InkWell(
-                  onTap: () => _goToGetCerttificate(context),
+                  onTap: () => _goToHistoryScreen(context),
                   child: Card(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -227,6 +228,14 @@ class _MainScreenState extends State<MainScreen> {
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const VaccinesDataSearchScreen()),
+    ).then((value) => _getUserData());
+  }
+
+  _goToHistoryScreen(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => const VaccinesSearchHistoryScreen()),
     ).then((value) => _getUserData());
   }
 
