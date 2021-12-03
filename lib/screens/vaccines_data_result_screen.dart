@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -25,11 +26,13 @@ class VaccinesDataResultScreen extends StatefulWidget {
       this.birthDate,
       this.json,
       required this.certificate,
-      required this.isFromMain})
+      required this.isFromMain,
+      required this.isFromHistory})
       : super(key: key);
   final String? restorationId;
   final Certificate certificate;
   final bool isFromMain;
+  final bool isFromHistory;
   final String? identification;
   final String? birthDate;
   final String? json;
@@ -139,11 +142,12 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
 
   Future<void> _getVaccinationData(
       BuildContext context, String identification, String birthDate) async {
+    String newID = identification.replaceAll("", "");
     final progress = ProgressHUD.of(context);
     progress!.show();
     try {
       var result = await VaccineService.shared
-          .getVaccinationData(dni: identification, birthDate: birthDate);
+          .getVaccinationData(dni: newID, birthDate: birthDate);
       progress.dismiss();
       setState(() {
         newCertificate = result as Certificate;
@@ -185,11 +189,12 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
   }
 
   _saveSearchDataIfNeeded() async {
-    if (widget.identification != null && widget.birthDate != null) {
+    if (!widget.isFromHistory) {
+      dynamic newJson = json.encode(newCertificate!.json);
       String encryptedIdentification = EncryptionUtil.shared
           .getEncryptedStringFrom(text: widget.identification!);
-      String encryptedJSON = EncryptionUtil.shared
-          .getEncryptedStringFrom(text: newCertificate!.json.toString());
+      String encryptedJSON =
+          EncryptionUtil.shared.getEncryptedStringFrom(text: newJson);
 
       DateTime birthDate =
           DateTimeUtils.shared.dateFromString(widget.birthDate!) ??
@@ -234,10 +239,10 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
               Visibility(
                 visible: _isVaccinePdfDownloaded || widget.isFromMain,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                   child: Container(
-                    height: 50,
-                    width: 180,
+                    height: 60,
+                    width: 240,
                     decoration: BoxDecoration(
                         color: Colors.blue,
                         borderRadius: BorderRadius.circular(8)),

@@ -23,9 +23,9 @@ class EncryptionUtil {
         return decrypted;
       }
     } catch (e) {
-      return "";
+      return "DECRYPTION FAILS";
     }
-    return "";
+    return "DECRYPTION UNKNOWN ERROR";
   }
 
   String getEncryptedStringFrom({required String text}) {

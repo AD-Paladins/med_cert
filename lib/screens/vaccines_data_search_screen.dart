@@ -67,6 +67,7 @@ class _VaccinesDataSearchScreenState extends State<VaccinesDataSearchScreen> {
                         identification: dniInput.text,
                         birthDate: dateInput.text,
                         json: cert.json.toString(),
+                        isFromHistory: false,
                       )));
         }
       });

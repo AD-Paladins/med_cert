@@ -5,6 +5,8 @@
 
 import 'dart:convert';
 
+import 'package:med_cert/util/date_utils.dart';
+
 Certificate certificateFromJson(String str) =>
     Certificate.fromJson(json.decode(str));
 
@@ -92,7 +94,8 @@ class Datavacuna {
   factory Datavacuna.fromJson(Map<String, dynamic> json) => Datavacuna(
         nomvacuna: json["nomvacuna"],
         dosisaplicada: json["dosisaplicada"],
-        fechavacuna: DateTime.parse(json["fechavacuna"]),
+        fechavacuna: DateTimeUtils.shared.dateFromString(json["fechavacuna"]) ??
+            DateTime.now(),
       );
 
   Map<String, dynamic> toJson() => {

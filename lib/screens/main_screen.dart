@@ -180,7 +180,7 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
               Visibility(
-                visible: true,
+                visible: false,
                 child: InkWell(
                   onTap: () => _goToHistoryScreen(context),
                   child: Card(
@@ -220,7 +220,10 @@ class _MainScreenState extends State<MainScreen> {
           context,
           MaterialPageRoute(
               builder: (_) => VaccinesDataResultScreen(
-                  certificate: userCertificate!, isFromMain: true)));
+                    certificate: userCertificate!,
+                    isFromMain: true,
+                    isFromHistory: false,
+                  )));
     }
   }
 

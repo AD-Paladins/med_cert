@@ -5,6 +5,7 @@ import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:med_cert/db/models/vaccination_status.dart';
 import 'package:med_cert/entities/certificate.dart';
 import 'package:med_cert/screens/vaccines_data_result_screen.dart';
+import 'package:med_cert/util/date_utils.dart';
 import 'package:med_cert/util/encryptioin.dart';
 import 'package:med_cert/widgets/search_history_cell_widget.dart';
 
@@ -59,25 +60,36 @@ class _VaccinesSearchHistoryScreenState
                 child: ListView.builder(
                   itemCount: vaccineStatusList.length,
                   itemBuilder: (BuildContext context, int index) {
-                    String jsonString = vaccineStatusList[index].json;
-                    dynamic jsonObject = jsonDecode(jsonString);
+                    String jsonEncypted = vaccineStatusList[index].json;
+                    String jsonString = EncryptionUtil.shared
+                        .getDecryptedStringFrom(text: jsonEncypted);
+                    dynamic jsonObject = json.decode(jsonString);
                     Certificate cert = Certificate.fromJson(jsonObject);
+                    String dateString = DateTimeUtils.shared.stringFromDate(
+                            vaccineStatusList[index].birthDate) ??
+                        DateTimeUtils.shared.stringFromDate(DateTime.now())!;
+                    String identification = EncryptionUtil.shared
+                        .getDecryptedStringFrom(
+                            text: vaccineStatusList[index].identification);
 
-                    // ignore: prefer_function_declarations_over_variables
-                    Future<void> Function(Certificate, BuildContext) handler =
-                        (Certificate certificate, BuildContext context) async {
+                    dynamic handler() async {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (_) => VaccinesDataResultScreen(
-                                  certificate: certificate,
-                                  isFromMain: true))).then((value) {
+                                    certificate: cert,
+                                    isFromMain: true,
+                                    identification: identification,
+                                    birthDate: dateString,
+                                    isFromHistory: true,
+                                  ))).then((value) {
                         Certificate? cert = value as Certificate?;
                         if (cert != null) {
                           newCertificate = cert;
                         }
                       });
-                    };
+                    }
+
                     return SearchHistoryCellWidget(
                       name: vaccineStatusList[index].name,
                       number: vaccineStatusList[index].id,

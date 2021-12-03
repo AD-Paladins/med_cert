@@ -49,7 +49,7 @@ class _SearchHistoryCellWidgetState extends State<SearchHistoryCellWidget> {
           );
     return InkWell(
       // onTap: () => _goToGet(widget.certificate, context),
-      onTap: () => widget.handler,
+      onTap: () => widget.handler(),
       child: Card(
         elevation: 2.0,
         shadowColor: const Color(0x77CDCDFF),
