@@ -17,7 +17,7 @@ class DataBaseClient {
   }
 
   Future<void> initDataBase(String path) async {
-    db = await openDatabase(path, version: 3,
+    db = await openDatabase(path, version: 4,
         onCreate: (Database db, int version) async {
       await db.execute('''
         create table $tableVaccinationStatus ( 

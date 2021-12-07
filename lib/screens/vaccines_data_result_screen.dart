@@ -47,6 +47,7 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
   bool _isVaccinePdfDownloaded = false;
   bool loading = false;
   String? pdfPath = "";
+  String pdfToken = "";
 
   @override
   void initState() {
@@ -116,28 +117,61 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
 
   Future<void> _getPDFVaccinationData(
       BuildContext context, Certificate cert) async {
-    if (widget.isFromMain) {
+    pdfToken = cert.data.datapersona.first.idencrypt;
+    pdfPath =
+        await VaccinePDFService.shared.getPDFVaccinationData(token: pdfToken);
+    if (widget.isFromMain || widget.isFromHistory) {
       String filePath =
           await getFilePath(cert.data.datapersona.first.idencrypt);
-      _openFileFrom(filePath);
+      _openFileFrom(
+          path: filePath,
+          token: cert.data.datapersona.first.idencrypt,
+          context: context);
       return;
     } else {
       final progress = ProgressHUD.of(context);
       progress!.show();
-      pdfPath = await VaccinePDFService.shared
-          .getPDFVaccinationData(token: cert.data.datapersona.first.idencrypt);
       if (pdfPath != null) {
         progress.dismiss();
         setState(() {
           _isVaccinePdfDownloaded = true;
-          _openFileFrom(pdfPath!);
+          _openFileFrom(
+              path: pdfPath!,
+              token: cert.data.datapersona.first.idencrypt,
+              context: context);
         });
       }
     }
   }
 
-  Future<void> _openFileFrom(String path) async {
+  Future<void> _openFileFrom(
+      {required String path,
+      required String token,
+      required BuildContext context}) async {
+    final progress = ProgressHUD.of(context);
+    progress!.show();
     final _result = await OpenFile.open(path);
+    progress.dismiss();
+    String errorMessage = "";
+    switch (_result.type) {
+      case ResultType.done:
+        break;
+      case ResultType.error:
+        errorMessage = "Ocurrió un error al tratar de obtener el documento.";
+        break;
+      case ResultType.fileNotFound:
+        errorMessage = "No se pudo encontrar el documento";
+        break;
+      case ResultType.permissionDenied:
+        errorMessage = "No tienes permisos para abrir este documento";
+        break;
+      default:
+        errorMessage = "Ocurrió un error al tratar de obtener el documento.";
+        break;
+    }
+    if (errorMessage.isNotEmpty) {
+      _showGenericError(message: errorMessage);
+    }
   }
 
   Future<void> _getVaccinationData(
@@ -189,36 +223,49 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
   }
 
   _saveSearchDataIfNeeded() async {
+    await _deleteRepeatedRegister();
+    await _deleteFistRegisterIfNeeded();
     if (!widget.isFromHistory) {
-      dynamic newJson = json.encode(newCertificate!.json);
-      String encryptedIdentification = EncryptionUtil.shared
-          .getEncryptedStringFrom(text: widget.identification!);
-      String encryptedJSON =
-          EncryptionUtil.shared.getEncryptedStringFrom(text: newJson);
-
-      DateTime birthDate =
-          DateTimeUtils.shared.dateFromString(widget.birthDate!) ??
-              DateTime.now();
-
-      VaccinationStatusModel item = VaccinationStatusModel(
-          id: 0,
-          name: newCertificate!.data.datapersona.first.nombres,
-          identification: encryptedIdentification,
-          birthDate: birthDate,
-          json: encryptedJSON,
-          isFavorite: false);
-      var itemReturn = await TodoProvider().insert(item);
-      print(itemReturn);
-
-      var listvaccines = await TodoProvider().getAllVaccinationStatus();
-      if (listvaccines != null) {
-        for (VaccinationStatusModel vaccine in listvaccines) {
-          String newJson =
-              EncryptionUtil.shared.getDecryptedStringFrom(text: vaccine.json);
-          print(newJson);
-        }
-      }
+      _saveNewVaccinationData();
     }
+  }
+
+  _deleteRepeatedRegister() async {
+    widget.identification!;
+    String encodedDni = EncryptionUtil.shared
+        .getEncryptedStringFrom(text: widget.identification!);
+    // VaccinationStatusModel? vacMod = await TodoProvider().getVaccinationStatusBy(dni: encodedDni);
+    var deletedRows = await TodoProvider().delete(dni: encodedDni);
+    print(deletedRows);
+  }
+
+  _deleteFistRegisterIfNeeded() async {
+    var listvaccines = await TodoProvider().getAllVaccinationStatus();
+    if (listvaccines != null && listvaccines.length >= 10) {
+      VaccinationStatusModel vaccine = listvaccines.first;
+      TodoProvider().delete(dni: vaccine.identification);
+    }
+  }
+
+  _saveNewVaccinationData() async {
+    dynamic newJson = json.encode(newCertificate!.json);
+    String encryptedIdentification = EncryptionUtil.shared
+        .getEncryptedStringFrom(text: widget.identification!);
+    String encryptedJSON =
+        EncryptionUtil.shared.getEncryptedStringFrom(text: newJson);
+
+    DateTime birthDate =
+        DateTimeUtils.shared.dateFromString(widget.birthDate!) ??
+            DateTime.now();
+
+    VaccinationStatusModel item = VaccinationStatusModel(
+        id: 0,
+        name: newCertificate!.data.datapersona.first.nombres,
+        identification: encryptedIdentification,
+        birthDate: birthDate,
+        json: encryptedJSON,
+        isFavorite: false);
+    var itemReturn = await TodoProvider().insert(item);
   }
 
   @override
@@ -286,7 +333,8 @@ class _VaccinesDataResultScreenState extends State<VaccinesDataResultScreen> {
                   child: TextButton(
                     onPressed: () {
                       if (_isVaccinePdfDownloaded && pdfPath != null) {
-                        _openFileFrom(pdfPath!);
+                        _openFileFrom(
+                            path: pdfPath!, token: pdfToken, context: context);
                       } else {
                         _getPDFVaccinationData(context, newCertificate!);
                       }

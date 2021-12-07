@@ -1,9 +1,9 @@
 name: med_cert
-description: A new Flutter project.
+description: An app to provide information about vaccination status for everyone in Ecuador.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.3+3
+version: 1.0.4+4
 
 environment:
   sdk: ">=2.12.0 <3.0.0"

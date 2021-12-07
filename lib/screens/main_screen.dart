@@ -180,7 +180,7 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
               Visibility(
-                visible: false,
+                visible: true,
                 child: InkWell(
                   onTap: () => _goToHistoryScreen(context),
                   child: Card(

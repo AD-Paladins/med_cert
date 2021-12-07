@@ -19,12 +19,36 @@ class VaccinationStatusModel {
       required this.isFavorite});
 
   static VaccinationStatusModel fromMap(Map<String, dynamic> map) {
+    print(map);
+    print(map.toString());
+    var idwhat = map[0];
+    print(idwhat);
     int id = map[0];
     String name = map[1];
     String identification = map[2];
     String birthDate = map[3];
     String json = map[4];
     String favorite = map[5];
+    DateTime newDate =
+        DateTimeUtils.shared.dateFromString(birthDate) ?? DateTime.now();
+    bool isFavorite = favorite.toLowerCase() == 'true';
+    VaccinationStatusModel vacc = VaccinationStatusModel(
+        id: id,
+        name: name,
+        identification: identification,
+        birthDate: newDate,
+        json: json,
+        isFavorite: isFavorite);
+    return vacc;
+  }
+
+  static VaccinationStatusModel fromSelectMap(Map<String, dynamic> map) {
+    int id = map['_id'];
+    String name = map['name'];
+    String identification = map['identification'];
+    String birthDate = map['birthDate'];
+    String json = map['json'];
+    String favorite = map['isFavorite'];
     DateTime newDate =
         DateTimeUtils.shared.dateFromString(birthDate) ?? DateTime.now();
     bool isFavorite = favorite.toLowerCase() == 'true';
@@ -113,11 +137,39 @@ class TodoProvider {
     }
   }
 
-  Future<int> delete(int id) async {
+  Future<VaccinationStatusModel?> getVaccinationStatusBy(
+      {required String dni}) async {
     Database? db = DataBaseClient.shared.db;
     if (db != null) {
+      try {
+        List<Map<String, dynamic>> maps = await db.query(tableVaccinationStatus,
+            columns: [
+              columnId,
+              name,
+              identification,
+              birthDate,
+              json,
+              isFavorite
+            ],
+            where: '$identification = ?',
+            whereArgs: [dni]);
+        if (maps.isNotEmpty) {
+          return VaccinationStatusModel.fromSelectMap(maps.first);
+        }
+      } catch (e) {
+        throw Exception(e.toString());
+      }
+    } else {
+      throw Exception("selectOne: No se pudo conectar a la base de datos");
+    }
+  }
+
+  Future<int> delete({required String dni}) async {
+    Database? db = DataBaseClient.shared.db;
+    if (db != null) {
+      String likeDni = '%$dni%';
       return await db.delete(tableVaccinationStatus,
-          where: '$columnId = ?', whereArgs: [id]);
+          where: '$identification LIKE ?', whereArgs: [likeDni]);
     } else {
       throw Exception("delete: No se pudo conectar a la base de datos");
     }
