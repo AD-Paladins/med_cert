@@ -1,19 +1,8 @@
 # med_cert
 
-A new Flutter project.
+This project was made to help ecuadorians for get their covid certificates easier.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Covid Medical Certification
 
 
 Thanks for the resources to:
@@ -26,3 +15,15 @@ Thanks for the resources to:
 <div>Icons made by <a href="" title="Kiranshastry">Kiranshastry</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
 <a target="_blank" href="https://icons8.com/icon/uAACeSzPCBZC/coronavirus-check">Coronavirus Check</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+
+<a target="_blank" href="https://icons8.com/icon/jwXe07zlBtRd/writer">Writer</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+
+<a target="_blank" href="https://icons8.com/icon/mpH52RRtTK3v/linkedin">Linkedin</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+
+<a target="_blank" href="https://icons8.com/icon/hBM9qipVeD2u/email">Email</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+
+<a target="_blank" href="https://icons8.com/icon/WIZHqjQ9RbXY/twitter">Twitter</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+
+<a target="_blank" href="https://icons8.com/icon/xWWrecGTwJr4/citation">Citation</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+
+<a target="_blank" href="https://icons8.com/icon/P2z3o3vJibbZ/multimedia-collection-archives-carried-on-a-server-computer">Multimedia collection archives carried on a server computer</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>

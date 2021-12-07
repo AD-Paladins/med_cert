@@ -2,9 +2,11 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:open_file/open_file.dart';
 import 'package:med_cert/db/models/vaccination_status.dart';
 import 'package:med_cert/entities/certificate.dart';
-import 'package:med_cert/screens/qr_reader_screen.dart';
 import 'package:med_cert/screens/vaccines_data_result_screen.dart';
 import 'package:med_cert/screens/vaccines_data_search_screen.dart';
 import 'package:med_cert/screens/vacines_search_history_screen.dart';
@@ -12,8 +14,6 @@ import 'package:med_cert/services/pdf_certificate_service.dart';
 import 'package:med_cert/util/encryptioin.dart';
 import 'package:med_cert/util/shared_preferences_util.dart';
 import 'package:med_cert/widgets/alert_dialog_widget.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:open_file/open_file.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key, this.restorationId}) : super(key: key);
@@ -207,11 +207,68 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
               ),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    leading: Image.asset(
+                      "assets/icons/writer.png",
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+                    // trailing: arrowIcon,
+                    title: const Text(
+                      "Autor: Andrés Paladines",
+                      style: TextStyle(fontSize: 19),
+                    ),
+                    subtitle: Row(
+                      children: [
+                        IconButton(
+                          icon: Image.asset('assets/icons/linkedin.png'),
+                          tooltip: 'LinkedIn',
+                          onPressed: () {
+                            _launch(
+                                url:
+                                    "https://www.linkedin.com/in/andres-paladines-71b76815b/");
+                          },
+                        ),
+                        IconButton(
+                          icon: Image.asset('assets/icons/instagram.png'),
+                          tooltip: 'Instagram',
+                          onPressed: () {
+                            _launch(
+                                url:
+                                    "https://www.instagram.com/andrespaladines/");
+                          },
+                        ),
+                        IconButton(
+                          icon: Image.asset('assets/icons/twitter.png'),
+                          tooltip: 'twitter',
+                          onPressed: () {
+                            _launch(url: "https://twitter.com/andrespaladine");
+                          },
+                        ),
+                        IconButton(
+                          icon: Image.asset(
+                              'assets/icons/multimedia-collection.png'),
+                          tooltip: 'twitter',
+                          onPressed: () {
+                            _launch(url: "https://twitter.com/andrespaladine");
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _launch({required String url}) async {
+    if (!await launch(url)) throw 'Could not launch $url';
   }
 
   _goToGetCerttificate(BuildContext context) async {
