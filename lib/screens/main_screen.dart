@@ -252,7 +252,24 @@ class _MainScreenState extends State<MainScreen> {
                               'assets/icons/multimedia-collection.png'),
                           tooltip: 'twitter',
                           onPressed: () {
-                            _launch(url: "https://twitter.com/andrespaladine");
+                            String message = """
+Thanks for the resources to:
+Icons made by photo3idea_studio from www.flaticon.com
+Icons made by Freepik from www.flaticon.com
+Icons made by Eucalyp from www.flaticon.com
+Icons made by Kiranshastry from www.flaticon.com
+
+Coronavirus Check icon by Icons8
+Writer icon by Icons8
+Linkedin icon by Icons8
+Email icon by Icons8
+Twitter icon by Icons8
+Citation icon by Icons8
+Multimedia collection archives carried on a server computer icon by Icons8
+                            """;
+                            AlertDialogWidget.showGenericDialog(
+                                context, "Créditos por imágenes", message,
+                                extraButton: null);
                           },
                         ),
                       ],
