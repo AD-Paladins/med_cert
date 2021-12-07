@@ -57,12 +57,17 @@ class _VaccinesDataSearchScreenState extends State<VaccinesDataSearchScreen> {
       progress.dismiss();
       setState(() {
         if (certificate != null) {
+          Certificate cert = certificate!;
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (_) => VaccinesDataResultScreen(
-                        certificate: certificate!,
+                        certificate: cert,
                         isFromMain: false,
+                        identification: dniInput.text,
+                        birthDate: dateInput.text,
+                        json: cert.json.toString(),
+                        isFromHistory: false,
                       )));
         }
       });

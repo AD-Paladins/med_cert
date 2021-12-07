@@ -1,5 +1,5 @@
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -22,8 +22,6 @@ class DioClient {
       Response response = await _dio.post(_baseUrl + '/tomapacientemsp',
           data: formData, options: Options(responseType: ResponseType.json));
       retrievedUser = response.data;
-      // ignore: avoid_print
-      print('User created: $retrievedUser');
     } catch (e) {
       print('Error creating user: $e');
     }

@@ -1,7 +1,6 @@
 library flutter_ticket_widget;
 
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:med_cert/util/date_utils.dart';
 
 class VaccineDataWidget extends StatefulWidget {
