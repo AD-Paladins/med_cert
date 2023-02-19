@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:med_cert/db/models/vaccination_status.dart';
@@ -15,7 +14,6 @@ class VaccinesSearchHistoryScreen extends StatefulWidget {
   _VaccinesSearchHistoryScreenState createState() =>
       _VaccinesSearchHistoryScreenState();
 }
-// "form[identificacion]=${widget.dni}&form[fechanacimiento]=${widget.dni}";
 
 class _VaccinesSearchHistoryScreenState
     extends State<VaccinesSearchHistoryScreen> {

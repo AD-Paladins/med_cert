@@ -90,9 +90,14 @@ class _MainScreenState extends State<MainScreen> {
       _firtsInitApp(context);
     }
 
-    Icon arrowIcon = Platform.isAndroid
-        ? const Icon(Icons.arrow_forward)
-        : const Icon(Icons.arrow_forward_ios);
+    Icon arrowIcon = Icon(Icons.arrow_forward_ios);
+    try {
+      arrowIcon = Platform.isAndroid
+          ? const Icon(Icons.arrow_forward)
+          : const Icon(Icons.arrow_forward_ios);
+    } catch (e) {
+      print("No platform detected");
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -323,6 +328,8 @@ Multimedia collection archives carried on a server computer icon by Icons8
           '#ff6666', 'Cancel', true, ScanMode.QR);
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
+    } catch (e) {
+      barcodeScanRes = 'Failed Platform fetch.';
     }
     if (barcodeScanRes == "-1" || int.parse(barcodeScanRes) == -1) {
       return;
